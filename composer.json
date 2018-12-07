@@ -1,0 +1,21 @@
+{
+  "name": "qbil-software/openexchangerates",
+  "description": "OpenExchangeRates PHP client. Open Exchange Rates provides a simple, lightweight and portable JSON API with live and historical foreign exchange rates",
+  "type": "library",
+  "require": {
+    "guzzlehttp/guzzle": "^6.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Qbil\\OpenExchangeRates\\": ""
+    }
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Faizan Akram",
+      "email": "hello@faizanakram.me"
+    }
+  ],
+  "minimum-stability": "stable"
+}
