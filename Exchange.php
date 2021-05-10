@@ -105,12 +105,12 @@ class Exchange
      * @return array
      * @throws GuzzleException
      */
-    public function currencies()
+    public function currencies(array $args = [])
     {
         return json_decode(
             $this
                 ->client
-                ->request('GET', '/currencies.json')
+                ->request('GET', '/currencies.json', ['query' => array_merge($args, $this->options)])
                 ->getBody()
                 ->getContents(),
             true
