@@ -21,7 +21,7 @@ PHP client for fetching foreign exchange (fx rate) from openexchangerates.com
 
 The client provides five public methods `latest`, `historical`, `between`, `convert` and `currencies`.
 
-All methods except `currencies` (which accepts no argument) can accept an associative array as argument with following keys
+All methods except `currencies` (which accepts [different arguments](https://docs.openexchangerates.org/reference/currencies-json)) can accept an associative array as argument with following keys
 
 1) `symbols` or `currencies` -  Get foreign exchange rates of only give currencies (in comma separated format). 
 <br /> <br /> For example <br /> `$exchange->latest(['symbols' => 'USD,EUR,GBP'])` will return an array of latest foreign exchange rates of currencies USD, EUR and GBP
