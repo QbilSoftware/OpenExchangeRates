@@ -33,7 +33,7 @@ class Exchange
     public function __construct($appId, $baseCurrency = null)
     {
         $this->client = new Client([
-            'base_uri' => 'https://openexchangerates.org/api',
+            'base_uri' => 'https://openexchangerates.org/api/',
         ]);
 
         $this->options['app_id'] = $appId;
@@ -50,7 +50,7 @@ class Exchange
      */
     public function latest(array $args = [])
     {
-        return $this->fetch('/latest.json', ['query' => array_merge($args, $this->options)]);
+        return $this->fetch('latest.json', ['query' => array_merge($this->options, $args)]);
     }
 
     /**
@@ -60,10 +60,10 @@ class Exchange
      */
     public function historical(array $args)
     {
-        if (!$args['date']) {
+        if (empty($args['date'])) {
             throw new \InvalidArgumentException('Required parameter `date` is missing');
         }
-        return $this->fetch("/historical/{$args['date']}.json", ['query' => array_merge($args, $this->options)]);
+        return $this->fetch("historical/{$args['date']}.json", ['query' => array_merge($this->options, $args)]);
     }
 
     /**
@@ -73,13 +73,13 @@ class Exchange
      */
     public function between(array $args)
     {
-        if (!$args['start']) {
+        if (empty($args['start'])) {
             throw new \InvalidArgumentException('Required parameter `start` is missing');
         }
-        if (!$args['end']) {
+        if (empty($args['end'])) {
             throw new \InvalidArgumentException('Required parameter `end` is missing');
         }
-        return $this->fetch("/time-series.json", ['query' => array_merge($args, $this->options)]);
+        return $this->fetch('time-series.json', ['query' => array_merge($this->options, $args)]);
     }
 
     /**
@@ -89,16 +89,16 @@ class Exchange
      */
     public function convert(array $args)
     {
-        if (!$args['amount']) {
+        if (empty($args['amount'])) {
             throw new \InvalidArgumentException('Required parameter `amount` is missing');
         }
-        if (!$args['from']) {
+        if (empty($args['from'])) {
             throw new \InvalidArgumentException('Required parameter `from` is missing');
         }
-        if (!$args['to']) {
+        if (empty($args['to'])) {
             throw new \InvalidArgumentException('Required parameter `to` is missing');
         }
-        return $this->fetch("/historical/{$args['amount']}/{$args['from']}/{$args['to']}.json", ['query' => array_merge($args, $this->options)], 'response');
+        return $this->fetch("convert/{$args['amount']}/{$args['from']}/{$args['to']}", ['query' => array_merge($this->options, $args)], 'response');
     }
 
     /**
@@ -110,7 +110,7 @@ class Exchange
         return json_decode(
             $this
                 ->client
-                ->request('GET', '/currencies.json', ['query' => array_merge($args, $this->options)])
+                ->request('GET', 'currencies.json', ['query' => array_merge($this->options, $args)])
                 ->getBody()
                 ->getContents(),
             true
