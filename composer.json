@@ -8,6 +8,7 @@
     "psr/http-client": "^1.0"
   },
   "require-dev": {
+    "phpstan/phpstan": "^1.12 || ^2.1",
     "phpunit/phpunit": "^8.5 || ^9.6 || ^10.5 || ^11.5 || ^12.5"
   },
   "autoload": {
@@ -29,6 +30,7 @@
   ],
   "minimum-stability": "stable",
   "scripts": {
-    "test": "phpunit"
+    "test": "phpunit",
+    "phpstan": "phpstan analyse"
   }
 }
