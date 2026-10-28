@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class Exchange
 {
-    private const BASE_URI = 'https://openexchangerates.org/api/';
+    private const string BASE_URI = 'https://openexchangerates.org/api/';
 
     private readonly HttpClientInterface $client;
 
