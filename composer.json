@@ -3,11 +3,22 @@
   "description": "OpenExchangeRates PHP client. Open Exchange Rates provides a simple, lightweight and portable JSON API with live and historical foreign exchange rates",
   "type": "library",
   "require": {
-    "guzzlehttp/guzzle": "^6.3 || ^7.4"
+    "php": "^7.2.5 || ^8.0",
+    "guzzlehttp/guzzle": "^7.4",
+    "psr/http-client": "^1.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.12 || ^2.1",
+    "phpunit/phpunit": "^8.5 || ^9.6 || ^10.5 || ^11.5 || ^12.5"
   },
   "autoload": {
     "psr-4": {
       "Qbil\\OpenExchangeRates\\": ""
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Qbil\\OpenExchangeRates\\Tests\\": "tests/"
     }
   },
   "license": "MIT",
@@ -17,5 +28,9 @@
       "email": "hello@faizanakram.me"
     }
   ],
-  "minimum-stability": "stable"
+  "minimum-stability": "stable",
+  "scripts": {
+    "test": "phpunit",
+    "phpstan": "phpstan analyse"
+  }
 }
