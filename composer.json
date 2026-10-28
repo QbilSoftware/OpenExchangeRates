@@ -3,7 +3,9 @@
   "description": "OpenExchangeRates PHP client. Open Exchange Rates provides a simple, lightweight and portable JSON API with live and historical foreign exchange rates",
   "type": "library",
   "require": {
-    "guzzlehttp/guzzle": "^6.3 || ^7.4"
+    "php": "^7.2.5 || ^8.0",
+    "guzzlehttp/guzzle": "^7.4",
+    "psr/http-client": "^1.0"
   },
   "autoload": {
     "psr-4": {
