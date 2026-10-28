@@ -60,3 +60,7 @@ All methods except `currencies` (which accepts [different arguments](https://doc
 
 Note: Some of the above methods are only available in enterprise or ultimate edition. Please visit https://openexchangerates.com for more info
 
+**Running tests**
+
+`composer install && composer test` — the suite uses Symfony's `MockHttpClient`, so no app id or network access is needed.
+
