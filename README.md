@@ -15,6 +15,25 @@ PHP client for fetching foreign exchange (fx rate) from openexchangerates.com
     
 3) You are ready to use the client now.
 
+**Requirements**
+
+PHP 8.1+ and `symfony/http-client` 6.4, 7.x or 8.x (Symfony 8 requires PHP 8.4).
+
+**Usage with Symfony**
+
+The constructor accepts an optional third argument, a `Symfony\Contracts\HttpClient\HttpClientInterface`. In a Symfony application register the class as a service and the framework's `http_client` is autowired into it:
+
+```yaml
+# config/services.yaml
+services:
+    Qbil\OpenExchangeRates\Exchange:
+        arguments:
+            $appId: '%env(OPENEXCHANGERATES_APP_ID)%'
+            $baseCurrency: 'USD' # optional
+```
+
+Request failures throw `Symfony\Contracts\HttpClient\Exception\ExceptionInterface` (previously `GuzzleHttp\Exception\GuzzleException`).
+
 
 
 **Methods**
@@ -35,7 +54,7 @@ All methods except `currencies` (which accepts [different arguments](https://doc
 
 3) `between` - This method fetches foreign exchange rates between particular dates specified by arguments key `start` and `end` (both in yyyy-mm-dd format) .e.g. `$exchange->between(['start' => '2017-10-01', 'end' => '2017-11-05'])` will return an array of exchange rates of between 2017-10-01 and 2017-11-05.
 
-4) `convert` - This method is used to convert any money value from one currency to another at the latest foreign exchange rates. It has three required argument keys `amount`, `from` and `to`. `from` and `to` are currency codes (3 letters) and `amount` is the amount you want to convert. e.g. `$exchange->between(['amount' => '15678800', 'from' => 'USD', 'to' => 'EUR'])` will return equivalent amount in EUR (as string)
+4) `convert` - This method is used to convert any money value from one currency to another at the latest foreign exchange rates. It has three required argument keys `amount`, `from` and `to`. `from` and `to` are currency codes (3 letters) and `amount` is the amount you want to convert. e.g. `$exchange->convert(['amount' => '15678800', 'from' => 'USD', 'to' => 'EUR'])` will return equivalent amount in EUR (as float)
 
 5) `currencies` - This method returns array of all supported currencies with symbol as their key and currency as their value.
 
