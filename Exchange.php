@@ -21,14 +21,14 @@ class Exchange
     private $client;
 
     /**
-     * @var array
+     * @var array<string, string>
      */
     private $options = [];
 
     /**
      * Exchange constructor.
-     * @param $appId
-     * @param null $baseCurrency
+     * @param string $appId
+     * @param string|null $baseCurrency
      */
     public function __construct($appId, $baseCurrency = null)
     {
@@ -44,8 +44,8 @@ class Exchange
     }
 
     /**
-     * @param array $args
-     * @return array
+     * @param array{symbols?: string, base?: string, show_alternative?: bool|int, ...} $args
+     * @return array<string, float|int> rates keyed by currency code
      * @throws GuzzleException
      */
     public function latest(array $args = [])
@@ -54,8 +54,8 @@ class Exchange
     }
 
     /**
-     * @param array $args
-     * @return array
+     * @param array{date: string, symbols?: string, base?: string, show_alternative?: bool|int, ...} $args date as YYYY-MM-DD
+     * @return array<string, float|int> rates keyed by currency code
      * @throws GuzzleException
      */
     public function historical(array $args)
@@ -67,8 +67,8 @@ class Exchange
     }
 
     /**
-     * @param array $args
-     * @return array
+     * @param array{start: string, end: string, symbols?: string, base?: string, show_alternative?: bool|int, ...} $args dates as YYYY-MM-DD
+     * @return array<string, array<string, float|int>> rates keyed by date, then by currency code
      * @throws GuzzleException
      */
     public function between(array $args)
@@ -83,8 +83,8 @@ class Exchange
     }
 
     /**
-     * @param array $args
-     * @return string
+     * @param array{amount: float|int|string, from: string, to: string, ...} $args from/to as currency codes
+     * @return float|int the converted amount
      * @throws GuzzleException
      */
     public function convert(array $args)
@@ -102,7 +102,8 @@ class Exchange
     }
 
     /**
-     * @return array
+     * @param array{show_alternative?: bool|int, show_inactive?: bool|int, ...} $args
+     * @return array<string, string> currency names keyed by currency code
      * @throws GuzzleException
      */
     public function currencies(array $args = [])
@@ -118,10 +119,10 @@ class Exchange
     }
 
     /**
-     * @param $route
-     * @param array $options
-     * @param $responseKey
-     * @return array|string
+     * @param string $route
+     * @param array<string, mixed> $options
+     * @param string $responseKey
+     * @return mixed
      * @throws GuzzleException
      */
     private function fetch($route, array $options, $responseKey = 'rates')
