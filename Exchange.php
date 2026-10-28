@@ -8,32 +8,32 @@
 
 namespace Qbil\OpenExchangeRates;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class Exchange
  */
 class Exchange
 {
+    private const BASE_URI = 'https://openexchangerates.org/api/';
 
-    /** @var Client */
-    private $client;
+    private readonly HttpClientInterface $client;
 
     /**
-     * @var array
+     * @var array<string, string>
      */
-    private $options = [];
+    private array $options = [];
 
     /**
      * Exchange constructor.
-     * @param $appId
-     * @param null $baseCurrency
+     * @param HttpClientInterface|null $client e.g. the framework's `http_client` service; a default client is created when omitted
      */
-    public function __construct($appId, $baseCurrency = null)
+    public function __construct(string $appId, ?string $baseCurrency = null, ?HttpClientInterface $client = null)
     {
-        $this->client = new Client([
-            'base_uri' => 'https://openexchangerates.org/api/',
+        $this->client = ($client ?? HttpClient::create())->withOptions([
+            'base_uri' => self::BASE_URI,
         ]);
 
         $this->options['app_id'] = $appId;
@@ -44,96 +44,80 @@ class Exchange
     }
 
     /**
-     * @param array $args
-     * @return array
-     * @throws GuzzleException
+     * @return array<string, float>
+     * @throws ExceptionInterface
      */
-    public function latest(array $args = [])
+    public function latest(array $args = []): array
     {
-        return $this->fetch('latest.json', ['query' => array_merge($this->options, $args)]);
+        return $this->fetch('latest.json', $args);
     }
 
     /**
-     * @param array $args
-     * @return array
-     * @throws GuzzleException
+     * @return array<string, float>
+     * @throws ExceptionInterface
      */
-    public function historical(array $args)
+    public function historical(array $args): array
     {
-        if (empty($args['date'])) {
-            throw new \InvalidArgumentException('Required parameter `date` is missing');
-        }
-        return $this->fetch("historical/{$args['date']}.json", ['query' => array_merge($this->options, $args)]);
+        $this->assertRequired($args, 'date');
+
+        return $this->fetch("historical/{$args['date']}.json", $args);
     }
 
     /**
-     * @param array $args
-     * @return array
-     * @throws GuzzleException
+     * @return array<string, array<string, float>>
+     * @throws ExceptionInterface
      */
-    public function between(array $args)
+    public function between(array $args): array
     {
-        if (empty($args['start'])) {
-            throw new \InvalidArgumentException('Required parameter `start` is missing');
-        }
-        if (empty($args['end'])) {
-            throw new \InvalidArgumentException('Required parameter `end` is missing');
-        }
-        return $this->fetch('time-series.json', ['query' => array_merge($this->options, $args)]);
+        $this->assertRequired($args, 'start', 'end');
+
+        return $this->fetch('time-series.json', $args);
     }
 
     /**
-     * @param array $args
-     * @return string
-     * @throws GuzzleException
+     * @throws ExceptionInterface
      */
-    public function convert(array $args)
+    public function convert(array $args): float
     {
-        if (empty($args['amount'])) {
-            throw new \InvalidArgumentException('Required parameter `amount` is missing');
-        }
-        if (empty($args['from'])) {
-            throw new \InvalidArgumentException('Required parameter `from` is missing');
-        }
-        if (empty($args['to'])) {
-            throw new \InvalidArgumentException('Required parameter `to` is missing');
-        }
-        return $this->fetch("convert/{$args['amount']}/{$args['from']}/{$args['to']}", ['query' => array_merge($this->options, $args)], 'response');
+        $this->assertRequired($args, 'amount', 'from', 'to');
+
+        return (float) $this->fetch("convert/{$args['amount']}/{$args['from']}/{$args['to']}", $args, 'response');
     }
 
     /**
-     * @return array
-     * @throws GuzzleException
+     * @return array<string, string>
+     * @throws ExceptionInterface
      */
-    public function currencies(array $args = [])
+    public function currencies(array $args = []): array
     {
-        return json_decode(
-            $this
-                ->client
-                ->request('GET', 'currencies.json', ['query' => array_merge($this->options, $args)])
-                ->getBody()
-                ->getContents(),
-            true
-        );
+        return $this->request('currencies.json', $args);
     }
 
     /**
-     * @param $route
-     * @param array $options
-     * @param $responseKey
-     * @return array|string
-     * @throws GuzzleException
+     * @throws ExceptionInterface
      */
-    private function fetch($route, array $options, $responseKey = 'rates')
+    private function fetch(string $route, array $args, string $responseKey = 'rates'): mixed
     {
-        $response = json_decode(
-            $this
-                ->client
-                ->request('GET', $route, $options)
-                ->getBody()
-                ->getContents(),
-            true
-        );
-        return $response[$responseKey];
+        return $this->request($route, $args)[$responseKey];
+    }
+
+    /**
+     * @throws ExceptionInterface
+     */
+    private function request(string $route, array $args): array
+    {
+        return $this
+            ->client
+            ->request('GET', $route, ['query' => array_merge($this->options, $args)])
+            ->toArray();
+    }
+
+    private function assertRequired(array $args, string ...$keys): void
+    {
+        foreach ($keys as $key) {
+            if (empty($args[$key])) {
+                throw new \InvalidArgumentException("Required parameter `{$key}` is missing");
+            }
+        }
     }
 }
